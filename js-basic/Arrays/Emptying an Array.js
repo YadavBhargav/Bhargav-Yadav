@@ -17,3 +17,4 @@ while(number > 0)
 
     console.log(another);
     console.log(number);
+                
