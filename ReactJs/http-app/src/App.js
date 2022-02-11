@@ -2,6 +2,22 @@ import React, { Component } from "react";
 import axios from "axios";
 import "./App.css";
 
+axios.interceptors.response.use(null, (error) => {
+  const expectedError =
+    error.response &&
+    error.response.status >= 400 &&
+    error.response.status < 500;
+
+  if (!expectedError) {
+    console.log("Logging the error", error);
+    alert("An unexpected error occurred.");
+  }
+
+  return Promise.reject(error);
+});
+
+const apiEndpoint = "https://jsonplaceholder.typicode.com/posts";
+
 class App extends Component {
   state = {
     posts: [],
@@ -9,22 +25,46 @@ class App extends Component {
 
   async componentDidMount() {
     // pending > resolved (success) OR rejected (failure)
-    const { data: posts } = await axios.get(
-      "https://jsonplaceholder.typicode.com/posts"
-    );
+    const { data: posts } = await axios.get(apiEndpoint);
     this.setState({ posts });
   }
 
-  handleAdd = () => {
-    console.log("Add");
+  handleAdd = async () => {
+    const obj = { title: "a", body: "b" };
+    const { data: post } = await axios.post(apiEndpoint, obj);
+    const posts = [post, ...this.state.posts];
+    this.setState({ posts });
   };
 
-  handleUpdate = (post) => {
-    console.log("Update", post);
+  handleUpdate = async (post) => {
+    post.title = "UPDATED";
+    await axios.put(apiEndpoint + "/" + post.id, post);
+
+    const posts = [...this.state.posts];
+    const index = posts.indexOf(post);
+    posts[index] = { ...post };
+    this.setState({ posts });
   };
 
-  handleDelete = (post) => {
-    console.log("Delete", post);
+  handleDelete = async (post) => {
+    const orignalPosts = this.state.posts;
+
+    const posts = this.state.posts.filter((p) => p.id !== post.id);
+    this.setState({ posts });
+
+    try {
+      await axios.delete(apiEndpoint + "/" + post.id);
+    } catch (ex) {
+      if (ex.response && ex.response.status === 404)
+        alert("This post has already been deleted.");
+      this.setState({ posts: orignalPosts });
+      // Expected (404: not found , 400 Bad Request) - CLIENTS ERRORS
+      //  - Display a specific error message
+      //
+      // Unexpected (network down, serve down, db down, bug)
+      //  - log them
+      //  - Display a generic and friendly error message
+    }
   };
 
   render() {
@@ -72,4 +112,4 @@ class App extends Component {
 
 export default App;
 
-// reach video 5
+// reach video   12
