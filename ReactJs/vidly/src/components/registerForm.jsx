@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import Form from "./common/form";
+import React from "react";
 import Joi from "joi-browser";
+import Form from "./common/form";
 
 class RegisterForm extends Form {
   state = {
@@ -9,13 +9,21 @@ class RegisterForm extends Form {
   };
 
   schema = {
-    username: Joi.string().required().email().label("Username"),
-    password: Joi.string().required().min(5).label("Password"),
-    name: Joi.string().required().label("Name"),
+    username: Joi.string()
+      .required()
+      .email()
+      .label("Username"),
+    password: Joi.string()
+      .required()
+      .min(5)
+      .label("Password"),
+    name: Joi.string()
+      .required()
+      .label("Name")
   };
 
   doSubmit = () => {
-    //Call the server
+    // Call the server
     console.log("Submitted");
   };
 
@@ -35,4 +43,3 @@ class RegisterForm extends Form {
 }
 
 export default RegisterForm;
-//video 22 reach
