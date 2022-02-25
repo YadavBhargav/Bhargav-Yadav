@@ -3,14 +3,21 @@ import React, { useState } from "react";
 import { Button, Form } from "semantic-ui-react";
 
 export default function Create() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [name, setName] = useState({ firstName: "", lastName: "" });
+
   const postData = () => {
-    axios.post(`https://62150bd7cdb9d09717ab8826.mockapi.io/data`, {
-      firstName,
-      lastName,
-    });
+    axios.post(`https://62150bd7cdb9d09717ab8826.mockapi.io/data`, name);
   };
+  const onChangeData = (data, type) => {
+    if (type === "first") {
+      name.firstName = data;
+      setName({ ...name });
+    } else if (type === "last") {
+      name.lastName = data;
+      setName({ ...name });
+    }
+  };
+
   return (
     <div>
       <Form className="create-form">
@@ -18,14 +25,14 @@ export default function Create() {
           <label>First Name : </label>
           <input
             placeholder="First Name"
-            onChange={(e) => setFirstName(e.target.value)}
+            onChange={(e) => onChangeData(e.target.value, 'first')}
           />
         </Form.Field>
         <Form.Field>
           <label>Last Name : </label>
           <input
             placeholder="Last Name"
-            onChange={(e) => setLastName(e.target.value)}
+            onChange={(e) => onChangeData(e.target.value, 'last')}
           />
         </Form.Field>
         <Button type="submit" onClick={postData}>
@@ -35,4 +42,3 @@ export default function Create() {
     </div>
   );
 }
-
